@@ -125,6 +125,56 @@ async def test_raise_for_status(server):
                 assert response.raise_for_status() is None  # type: ignore
 
 
+@pytest.mark.parametrize(
+    "method", ["get", "post", "put", "patch", "delete", "options", "head"]
+)
+@pytest.mark.parametrize("status_code", [200, 400, 404, 500, 505])
+@pytest.mark.usefixtures("async_environment")
+async def test_raise_for_status_on_request(server, method, status_code):
+    async with httpx.AsyncClient() as client:
+        request = getattr(client, method)
+        if 400 <= status_code < 600:
+            with pytest.raises(httpx.HTTPStatusError) as exc_info:
+                await request(
+                    server.url.copy_with(path=f"/status/{status_code}"),
+                    raise_for_status=True,
+                )
+            assert exc_info.value.response.status_code == status_code
+            assert exc_info.value.request.url.path == f"/status/{status_code}"
+        else:
+            await request(
+                server.url.copy_with(path=f"/status/{status_code}"),
+                raise_for_status=True,
+            )
+
+
+@pytest.mark.parametrize(
+    "method", ["get", "post", "put", "patch", "delete", "options", "head"]
+)
+@pytest.mark.parametrize("status_code", [200, 400, 404, 500, 505])
+@pytest.mark.usefixtures("async_environment")
+async def test_raise_for_status_on_client_for_each_request(server, method, status_code):
+    async with httpx.AsyncClient(raise_for_status=True) as client:
+        request = getattr(client, method)
+        if 400 <= status_code < 600:
+            with pytest.raises(httpx.HTTPStatusError) as exc_info:
+                await request(server.url.copy_with(path=f"/status/{status_code}"))
+            assert exc_info.value.response.status_code == status_code
+            assert exc_info.value.request.url.path == f"/status/{status_code}"
+        else:
+            await request(server.url.copy_with(path=f"/status/{status_code}"))
+
+
+@pytest.mark.parametrize(
+    "method", ["get", "post", "put", "patch", "delete", "options", "head"]
+)
+@pytest.mark.usefixtures("async_environment")
+async def test_raise_for_status_on_client_overridden_by_request(server, method):
+    async with httpx.AsyncClient(raise_for_status=True) as client:
+        request = getattr(client, method)
+        await request(server.url.copy_with(path="/status/400"), raise_for_status=False)
+
+
 @pytest.mark.usefixtures("async_environment")
 async def test_options(server):
     async with httpx.AsyncClient() as client:

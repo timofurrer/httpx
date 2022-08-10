@@ -38,6 +38,7 @@ def request(
     verify: VerifyTypes = True,
     cert: typing.Optional[CertTypes] = None,
     trust_env: bool = True,
+    raise_for_status: bool = False,
 ) -> Response:
     """
     Sends an HTTP request.
@@ -77,6 +78,7 @@ def request(
     file, key file, password).
     * **trust_env** - *(optional)* Enables or disables usage of environment
     variables for configuration.
+    * **raise_for_status** - *(optional)* If set to `true`, raise the `HTTPStatusError` if one occurred.
 
     **Returns:** `Response`
 
@@ -96,6 +98,7 @@ def request(
         verify=verify,
         timeout=timeout,
         trust_env=trust_env,
+        raise_for_status=raise_for_status,
     ) as client:
         return client.request(
             method=method,
@@ -130,6 +133,7 @@ def stream(
     verify: VerifyTypes = True,
     cert: typing.Optional[CertTypes] = None,
     trust_env: bool = True,
+    raise_for_status: bool = False,
 ) -> typing.Iterator[Response]:
     """
     Alternative to `httpx.request()` that streams the response body
@@ -148,6 +152,7 @@ def stream(
         verify=verify,
         timeout=timeout,
         trust_env=trust_env,
+        raise_for_status=raise_for_status,
     ) as client:
         with client.stream(
             method=method,
@@ -177,6 +182,7 @@ def get(
     verify: VerifyTypes = True,
     timeout: TimeoutTypes = DEFAULT_TIMEOUT_CONFIG,
     trust_env: bool = True,
+    raise_for_status: bool = False,
 ) -> Response:
     """
     Sends a `GET` request.
@@ -199,6 +205,7 @@ def get(
         verify=verify,
         timeout=timeout,
         trust_env=trust_env,
+        raise_for_status=raise_for_status,
     )
 
 
@@ -215,6 +222,7 @@ def options(
     verify: VerifyTypes = True,
     timeout: TimeoutTypes = DEFAULT_TIMEOUT_CONFIG,
     trust_env: bool = True,
+    raise_for_status: bool = False,
 ) -> Response:
     """
     Sends an `OPTIONS` request.
@@ -237,6 +245,7 @@ def options(
         verify=verify,
         timeout=timeout,
         trust_env=trust_env,
+        raise_for_status=raise_for_status,
     )
 
 
@@ -253,6 +262,7 @@ def head(
     verify: VerifyTypes = True,
     timeout: TimeoutTypes = DEFAULT_TIMEOUT_CONFIG,
     trust_env: bool = True,
+    raise_for_status: bool = False,
 ) -> Response:
     """
     Sends a `HEAD` request.
@@ -275,6 +285,7 @@ def head(
         verify=verify,
         timeout=timeout,
         trust_env=trust_env,
+        raise_for_status=raise_for_status,
     )
 
 
@@ -295,6 +306,7 @@ def post(
     verify: VerifyTypes = True,
     timeout: TimeoutTypes = DEFAULT_TIMEOUT_CONFIG,
     trust_env: bool = True,
+    raise_for_status: bool = False,
 ) -> Response:
     """
     Sends a `POST` request.
@@ -318,6 +330,7 @@ def post(
         verify=verify,
         timeout=timeout,
         trust_env=trust_env,
+        raise_for_status=raise_for_status,
     )
 
 
@@ -338,6 +351,7 @@ def put(
     verify: VerifyTypes = True,
     timeout: TimeoutTypes = DEFAULT_TIMEOUT_CONFIG,
     trust_env: bool = True,
+    raise_for_status: bool = False,
 ) -> Response:
     """
     Sends a `PUT` request.
@@ -361,6 +375,7 @@ def put(
         verify=verify,
         timeout=timeout,
         trust_env=trust_env,
+        raise_for_status=raise_for_status,
     )
 
 
@@ -381,6 +396,7 @@ def patch(
     verify: VerifyTypes = True,
     timeout: TimeoutTypes = DEFAULT_TIMEOUT_CONFIG,
     trust_env: bool = True,
+    raise_for_status: bool = False,
 ) -> Response:
     """
     Sends a `PATCH` request.
@@ -404,6 +420,7 @@ def patch(
         verify=verify,
         timeout=timeout,
         trust_env=trust_env,
+        raise_for_status=raise_for_status,
     )
 
 
@@ -420,6 +437,7 @@ def delete(
     verify: VerifyTypes = True,
     timeout: TimeoutTypes = DEFAULT_TIMEOUT_CONFIG,
     trust_env: bool = True,
+    raise_for_status: bool = False,
 ) -> Response:
     """
     Sends a `DELETE` request.
@@ -442,4 +460,5 @@ def delete(
         verify=verify,
         timeout=timeout,
         trust_env=trust_env,
+        raise_for_status=raise_for_status,
     )

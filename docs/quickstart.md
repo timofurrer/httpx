@@ -294,6 +294,38 @@ Any successful response codes will simply return `None` rather than raising an e
 >>> r.raise_for_status()
 ```
 
+For convenience we can also set `raise_for_status=True` on a request:
+
+```pycon
+>>> httpx.get('https://httpbin.org/status/404', raise_for_status=True)
+Traceback (most recent call last):
+  File "/Users/tomchristie/GitHub/encode/httpcore/httpx/models.py", line 837, in raise_for_status
+    raise HTTPStatusError(message, response=self)
+httpx._exceptions.HTTPStatusError: 404 Client Error: Not Found for url: https://httpbin.org/status/404
+For more information check: https://httpstatuses.com/404
+```
+
+Or even for an entire `httpx.Client` or `httpx.AsyncClient`:
+
+```pycon
+>>> client = httpx.Client(raise_for_status=True)
+>>> client.get('https://httpbin.org/status/404')
+Traceback (most recent call last):
+  File "/Users/tomchristie/GitHub/encode/httpcore/httpx/models.py", line 837, in raise_for_status
+    raise HTTPStatusError(message, response=self)
+httpx._exceptions.HTTPStatusError: 404 Client Error: Not Found for url: https://httpbin.org/status/404
+For more information check: https://httpstatuses.com/404
+```
+
+An individual request can always override what is being configured in the client:
+
+```pycon
+>>> client = httpx.Client(raise_for_status=True)
+>>> not_found = client.get('https://httpbin.org/status/404', raise_for_status=False)
+>>> not_found.status_code
+404
+```
+
 ## Response Headers
 
 The response headers are available as a dictionary-like interface.

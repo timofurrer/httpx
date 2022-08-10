@@ -144,6 +144,53 @@ def test_raise_for_status(server):
                 assert response.raise_for_status() is None  # type: ignore
 
 
+@pytest.mark.parametrize(
+    "method", ["get", "post", "put", "patch", "delete", "options", "head"]
+)
+@pytest.mark.parametrize("status_code", [200, 400, 404, 500, 505])
+def test_raise_for_status_on_request(server, method, status_code):
+    with httpx.Client() as client:
+        request = getattr(client, method)
+        if 400 <= status_code < 600:
+            with pytest.raises(httpx.HTTPStatusError) as exc_info:
+                request(
+                    server.url.copy_with(path=f"/status/{status_code}"),
+                    raise_for_status=True,
+                )
+            assert exc_info.value.response.status_code == status_code
+            assert exc_info.value.request.url.path == f"/status/{status_code}"
+        else:
+            request(
+                server.url.copy_with(path=f"/status/{status_code}"),
+                raise_for_status=True,
+            )
+
+
+@pytest.mark.parametrize(
+    "method", ["get", "post", "put", "patch", "delete", "options", "head"]
+)
+@pytest.mark.parametrize("status_code", [200, 400, 404, 500, 505])
+def test_raise_for_status_on_client_for_each_request(server, method, status_code):
+    with httpx.Client(raise_for_status=True) as client:
+        request = getattr(client, method)
+        if 400 <= status_code < 600:
+            with pytest.raises(httpx.HTTPStatusError) as exc_info:
+                request(server.url.copy_with(path=f"/status/{status_code}"))
+            assert exc_info.value.response.status_code == status_code
+            assert exc_info.value.request.url.path == f"/status/{status_code}"
+        else:
+            request(server.url.copy_with(path=f"/status/{status_code}"))
+
+
+@pytest.mark.parametrize(
+    "method", ["get", "post", "put", "patch", "delete", "options", "head"]
+)
+def test_raise_for_status_on_client_overridden_by_request(server, method):
+    with httpx.Client(raise_for_status=True) as client:
+        request = getattr(client, method)
+        request(server.url.copy_with(path="/status/400"), raise_for_status=False)
+
+
 def test_options(server):
     with httpx.Client() as client:
         response = client.options(server.url)
